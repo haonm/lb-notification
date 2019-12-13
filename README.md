@@ -3,7 +3,7 @@
 ### Development
 
 - Requirement: `docker` & `docker-compose`
-- Go to root folder and run: `docker-compose up -d`
+- Go to root folder and run: `docker-compose build && docker-compose up -d`
 - Exec to server container, cd to server then run `node create-lb-tables.js`
 - React app run in http://localhost:3000
 - CRUD API explorer: http://localhost:3001/explorer

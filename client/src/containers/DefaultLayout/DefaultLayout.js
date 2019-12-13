@@ -38,6 +38,8 @@ class DefaultLayout extends Component {
       listening: false,
     };
 
+    this.currentUser = JSON.parse(localStorage.getItem('currentUser'));
+
     this.toggleInfo = this.toggleInfo.bind(this);
   }
 
@@ -60,10 +62,8 @@ class DefaultLayout extends Component {
 
   componentDidMount() {
     const self = this;
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser && currentUser.accessToken && currentUser.role === 'staff') {
+    if (this.currentUser && this.currentUser.accessToken && this.currentUser.role === 'staff') {
       socket.on('updated_message', function(data) {
-          // use the socket as usual
           console.log(data);
           self.setState({notifyModal: true, updateData: data});
       });

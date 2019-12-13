@@ -5,13 +5,38 @@
 
 'use strict';
 
+var ds = require('./datasources');
+var connectionString = `${ds.db.host}://${ds.db.user}:${ds.db.password}@${ds.db.host}/${ds.db.database}`;
+
 var loopback = require('loopback');
 var boot = require('loopback-boot');
 var pg = require('pg');
+var pgNotify = require('@becual/pg-notify');
+
 var app = module.exports = loopback();
+
 
 app.start = function() {
   // start the web server
+  (async () => {
+      const client = new pg.Client({ connectionString });
+      const tableList = ['user', 'message'];
+
+      try {
+          // Try to generate configuration
+          await client.connect();
+          await pgNotify(client, {schema: 'public'}).config(tableList);
+      }
+      catch(error) {
+          // Show errors
+          console.log(error.message);
+      }
+      finally {
+          // Close connection
+          await client.end();
+      }
+  })();
+
   return app.listen(function() {
     app.emit('started');
     var baseUrl = app.get('url').replace(/\/$/, '');
@@ -38,7 +63,6 @@ boot(app, __dirname, function(err) {
           console.log('user disconnected');
       });
 
-      const connectionString = 'postgres://postgres:123456@postgres/postgres';
       const pgClient = new pg.Client(connectionString);
 
       pgClient.connect();
@@ -50,19 +74,5 @@ boot(app, __dirname, function(err) {
         }
       });
     });
-
-    // const connectionString = 'postgres://postgres:123456@postgres/postgres';
-    // const pgClient = new pg.Client(connectionString);
-
-    // pgClient.connect();
-    // pgClient.query('LISTEN notify_table_channel');
-    // pgClient.on('notification', async (data) => {
-    //   const payload = JSON.parse(data.payload);
-    //   if (payload && payload.type === 'UPDATE' && payload.table === 'message') {
-    //     console.log(payload.data);
-    //     socket.emit('updated_message', payload.data);
-    //   }
-    // });
-    // app.start();
   }
 });
