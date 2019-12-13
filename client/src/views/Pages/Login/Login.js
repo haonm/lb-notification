@@ -43,6 +43,9 @@ class Login extends Component {
               user => {
                   const { from } = this.props.location.state || { from: { pathname: "/" } };
                   this.props.history.push(from);
+                  setTimeout(() => {
+                    window.location.reload(true);
+                  }, 100);
               },
               error => this.setState({ error, loading: false })
           );

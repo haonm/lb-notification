@@ -22,6 +22,7 @@ app.start = function() {
     }
   });
 };
+
 // Bootstrap the application, configure models, datasources and middleware.
 // Sub-apps like REST API are mounted via boot scripts.
 boot(app, __dirname, function(err) {
@@ -30,17 +31,38 @@ boot(app, __dirname, function(err) {
   // start the server if `$ node server.js`
   if (require.main === module) {
     app.io = require('socket.io')(app.start());
-    const connectionString = 'postgres://postgres:123456@postgres/postgres';
-    const pgClient = new pg.Client(connectionString);
 
-    pgClient.connect();
-    pgClient.query('LISTEN notify_table_channel');
-    pgClient.on('notification', async (data) => {
-      const payload = JSON.parse(data.payload);
-      if (payload && payload.type === 'UPDATE' && payload.table === 'message') {
-        console.log(payload.data);
-      }
+    app.io.on('connection', function(socket){
+      console.log('a user connected');
+      socket.on('disconnect', function(){
+          console.log('user disconnected');
+      });
+
+      const connectionString = 'postgres://postgres:123456@postgres/postgres';
+      const pgClient = new pg.Client(connectionString);
+
+      pgClient.connect();
+      pgClient.query('LISTEN notify_table_channel');
+      pgClient.on('notification', async (data) => {
+        const payload = JSON.parse(data.payload);
+        if (payload && payload.type === 'UPDATE' && payload.table === 'message') {
+          socket.emit('updated_message', payload.data);
+        }
+      });
     });
+
+    // const connectionString = 'postgres://postgres:123456@postgres/postgres';
+    // const pgClient = new pg.Client(connectionString);
+
+    // pgClient.connect();
+    // pgClient.query('LISTEN notify_table_channel');
+    // pgClient.on('notification', async (data) => {
+    //   const payload = JSON.parse(data.payload);
+    //   if (payload && payload.type === 'UPDATE' && payload.table === 'message') {
+    //     console.log(payload.data);
+    //     socket.emit('updated_message', payload.data);
+    //   }
+    // });
     // app.start();
   }
 });

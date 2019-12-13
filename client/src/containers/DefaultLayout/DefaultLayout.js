@@ -3,6 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import * as router from 'react-router-dom';
 import { Container, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import {API_URL} from '../../configs';
+import openSocket from 'socket.io-client';
 
 import {
   AppAside,
@@ -24,6 +25,8 @@ import routes from '../../routes';
 const DefaultAside = React.lazy(() => import('./DefaultAside'));
 const DefaultFooter = React.lazy(() => import('./DefaultFooter'));
 const DefaultHeader = React.lazy(() => import('./DefaultHeader'));
+
+const socket = openSocket(API_URL);
 
 class DefaultLayout extends Component {
 
@@ -53,6 +56,18 @@ class DefaultLayout extends Component {
         window.location.reload(true);
       }
     });
+  }
+
+  componentDidMount() {
+    const self = this;
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (currentUser && currentUser.accessToken && currentUser.role === 'staff') {
+      socket.on('updated_message', function(data) {
+          // use the socket as usual
+          console.log(data);
+          self.setState({notifyModal: true, updateData: data});
+      });
+    }
   }
 
   render() {
@@ -115,7 +130,7 @@ class DefaultLayout extends Component {
                 className={'modal-info'}>
           <ModalHeader toggle={this.toggleInfo}>Message Updated!</ModalHeader>
           <ModalBody>
-            {`Message id: ${notifyData ? notifyData.data.id : ''} has been updated with new version: ${notifyData ? notifyData.data.version : ''}`}
+            {`Message id: ${notifyData ? notifyData.id : ''} has been updated with new version: ${notifyData ? notifyData.version : ''}`}
           </ModalBody>
           <ModalFooter>
             <Button color="secondary" onClick={this.toggleInfo}>OK, refresh data</Button>

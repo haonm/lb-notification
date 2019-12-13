@@ -16,7 +16,7 @@ function login(email, password) {
         body: JSON.stringify({ email, password })
     };
 
-    return fetch(`${API_URL}/users/login`, requestOptions)
+    return fetch(`${API_URL}/api/users/login`, requestOptions)
         .then(handleResponse)
         .then(async (res) => {
             if (res) {
@@ -42,7 +42,7 @@ function getAll() {
         headers: authHeader()
     };
 
-    return fetch(`${API_URL}/users`, requestOptions).then(handleResponse);
+    return fetch(`${API_URL}/api/users`, requestOptions).then(handleResponse);
 }
 
 function getUser(userId) {
@@ -51,5 +51,5 @@ function getUser(userId) {
       headers: authHeader()
   };
 
-  return fetch(`${API_URL}/users/${userId}`, requestOptions).then(handleResponse);
+  return fetch(`${API_URL}/api/users/${userId}`, requestOptions).then(handleResponse);
 }
