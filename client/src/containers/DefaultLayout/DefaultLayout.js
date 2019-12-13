@@ -55,25 +55,6 @@ class DefaultLayout extends Component {
     });
   }
 
-  handleEventsListener() {
-    const self = this;
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-    if (currentUser && currentUser.accessToken) {
-      const urlToChangeStream = `${API_URL}/messages/change-stream?_format=event-stream&access_token=${currentUser.accessToken}`;
-      const src = new EventSource(urlToChangeStream);
-      src.addEventListener('data', function(msg) {
-        var data = JSON.parse(msg.data);
-        if (data && currentUser.role === 'staff') {
-          self.setState({notifyModal: true, updateData: data});
-        }
-      });
-    }
-  }
-
-  componentDidMount() {
-    this.handleEventsListener();
-  }
-
   render() {
     const notifyData = this.state.updateData;
 

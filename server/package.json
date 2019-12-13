@@ -12,6 +12,8 @@
     "posttest": "npm run lint && npm audit"
   },
   "dependencies": {
+    "@becual/pg-notify": "^2.0.5",
+    "bluebird": "^3.7.2",
     "compression": "^1.0.3",
     "cors": "^2.5.2",
     "event-stream": "^4.0.1",
@@ -20,7 +22,9 @@
     "loopback-boot": "^2.6.5",
     "loopback-component-explorer": "^6.2.0",
     "loopback-connector-postgresql": "^3.8.1",
+    "pg": "^7.14.0",
     "serve-favicon": "^2.0.1",
+    "socket.io": "^2.3.0",
     "strong-error-handler": "^3.0.0"
   },
   "devDependencies": {
